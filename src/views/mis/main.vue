@@ -1,15 +1,14 @@
 <template>
   <div class="site-wrapper"
-       :class="{'site-wrapper--fold':sidebar.sidebarFold}"
+       :class="{'site-sidebar--fold':sidebar.sidebarFold}"
        v-loading.fullsrceen.lock="loading" element-loading-text="拼命加载中..."
   >
     <nav class="site-navbar"
          :class="{'site-navbar--fold':sidebar.sidebarFold}"
     >
-
       <div class="site-navbar__header">
         <h1 class="site-navbar__brand">
-          <a href="" class="site-navbar__brand-lg">神州大健康</a>
+          <a href="" class="site-navbar__brand-lg">浙里健康</a>
           <a href="" class="site-navbar__brand-mini">
             体检
           </a>
@@ -42,13 +41,13 @@
       </div>
 
     </nav>
-    <aside class="site-sidebar site-sidebar--dark-popper">
+    <aside class="site-sidebar site-sidebar--dark-popper " :class="{'site-sidebar--fold':sidebar.sidebarFold}">
       <div class="site-sidebar__inner">
         <el-menu
-            :default-active="siteContent.menuActiveName || 'Home'"
+            :default-active="menuActiveName || 'Home'"
             class="site-sidebar__menu"
             :collapse="sidebar.sidebarFold"
-
+            :collapse-transition="false"
             background-color="#263238"
             text-color="#8a979e"
             active-text-color="#fff"
@@ -146,6 +145,47 @@
               <SvgIcon name="system" class="icon-svg"></SvgIcon>
               <span>体检管理</span>
             </template>
+            <el-menu-item index="MisAppointment"
+                          v-if="proxy.isAuth(['ROOT', 'APPOINTMENT:SELECT'])"
+                          @click="$router.push({ name: 'MisAppointment' })">
+              <el-icon>
+                <SvgIcon name="appointment_fill"
+                         class="icon-svg"/>
+              </el-icon>
+              <span slot="title">体检预约</span>
+            </el-menu-item>
+            <el-menu-item index="MisCustomerCheckin"
+                          v-if="proxy.isAuth(['ROOT', 'CUSTOMER_CHICKIN:SELECT'])"
+                          @click="$router.push({ name: 'MisCustomerCheckin' })">
+              <el-icon>
+                <SvgIcon name="checkin_fill" class="icon-svg"/>
+              </el-icon>
+              <span slot="title">体检签到</span>
+            </el-menu-item>
+            <el-menu-item index="MisAppointmentRestriction"
+                          v-if="proxy.isAuth(['ROOT', 'APPOINTMENT_RESTRICTION:SELECT'])"
+                          @click="$router.push({ name: 'MisAppointmentRestriction' })">
+              <el-icon>
+                <SvgIcon name="setting_fill" class="icon-svg"/>
+              </el-icon>
+              <span slot="title">预约设置</span>
+            </el-menu-item>
+            <el-menu-item index="MisCheckup"
+                          v-if="proxy.isAuth(['ROOT', 'CHECKUP:SELECT'])"
+                          @click="$router.push({ name: 'MisCheckup' })">
+              <el-icon>
+                <SvgIcon name="doctor_fill" class="icon-svg"/>
+              </el-icon>
+              <span slot="title">医生检查</span>
+            </el-menu-item>
+            <el-menu-item index="MisCheckupReport"
+                          v-if="proxy.isAuth(['ROOT', 'CHECKUP_REPORT:SELECT'])"
+                          @click="$router.push({ name: 'MisCheckupReport' })">
+              <el-icon>
+                <SvgIcon name="file_fill" class="icon-svg"/>
+              </el-icon>
+              <span slot="title">体检报告</span>
+            </el-menu-item>
           </el-sub-menu>
 
           <el-sub-menu index="系统设置">
@@ -153,46 +193,91 @@
               <SvgIcon name="system" class="icon-svg"></SvgIcon>
               <span>系统设置</span>
             </template>
+            <el-menu-item index="MisFlowRegulation"
+                          v-if="proxy.isAuth(['ROOT', 'FLOW_REGULATION:SELECT'])"
+                          @click="$router.push({ name: 'MisFlowRegulation' })">
+              <el-icon>
+                <SvgIcon name="people_fill" class="icon-svg"/>
+              </el-icon>
+              <span slot="title">人员限流</span>
+            </el-menu-item>
+
           </el-sub-menu>
+
+
         </el-menu>
       </div>
 
     </aside>
+    <div class="site-content__wrapper">
+      <main class="site-content">
+        <el-tabs
+            @tab-click="selectTab"
+            @tab-remove="removeTab"
+            v-model="mainTabActiveName"
+            closable
+            v-if="$route.meta.isTab"
+        >
+          <el-tab-pane v-for="item in mainTabs" :label="item.title" :name="item.name">
+            <el-card :body-style="siteContentViewHeight">
+              <router-view key="router.currentRoute.value.query.random"/>
+            </el-card>
+          </el-tab-pane>
+
+        </el-tabs>
+        <el-card :body-style="siteContentViewHeight" v-else>
+          <router-view key="router.currentRoute.value.query.random"/>
+        </el-card>
+
+      </main>
+    </div>
   </div>
 
 
-  <router-view/>
 </template>
 <script setup lang="ts">
-import {getCurrentInstance, reactive, ref} from "vue";
+import {getCurrentInstance, onMounted, reactive, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import SvgIcon from "../../components/SvgIcon.vue";
 import {useUserStore} from "../../store/user";
 import {storeToRefs} from "pinia";
 import {UserFilled} from "@element-plus/icons-vue";
+import {useSiteContentStore} from "../../store/siteContent"
 
 let router = useRouter()
 let route = useRoute()
+let SiteContentStore = useSiteContentStore()
 let {proxy} = getCurrentInstance()
 let userStore = useUserStore()
 let {username, avatar, updatePasswordVisible} = storeToRefs(userStore)
+let {
+  documentClientHeight,
+  siteContentViewHeight,
+  mainTabs,
+  height,
+  mainTabActiveName,
+  menuActiveName,
+} = storeToRefs(SiteContentStore)
+let siteContentStore = useSiteContentStore();
+siteContentStore.resetDocumentClientHeight()
 const sidebar = reactive({
-  sidebarFold: false,
+  sidebarFold: true,
   sidebarLayoutSkin: 'dark'
-
 })
+
+const selectTab = (tab) => {
+  router.push({
+    name: tab.paneName
+  })
+
+}
+const removeTab = (name) => {
+  siteContentStore.removeTab(name)
+}
 const loading = ref(false)
-const siteContent = reactive({
 
-  documentClientHeight: 0,
-  siteContentViewHeight: {},
-  mainTabs: [],
-  height: null,
-  mainTabActiveName: '',
-  menuActiveName: ''
-})
 const handleSwitch = () => {
-
+  sidebar.sidebarFold = !sidebar.sidebarFold
 }
 const logout = () => {
 
@@ -200,6 +285,17 @@ const logout = () => {
 const updatePassword = () => {
 
 }
+window.onresize = () => {
+  siteContentStore.resetDocumentClientHeight();
+  siteContentStore.loadSiteContentClientHeight(route)
+}
+onMounted(() => SiteContentStore.routeHandle(route))
+watch(() => router, () => {
+  SiteContentStore.routeHandle(route)
+}, {
+  immediate: true,
+  deep: true
+})
 </script>
 <style lang="sass" scoped>
 @import url("../../assets/scss/index.scss")

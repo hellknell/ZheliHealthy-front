@@ -18,12 +18,42 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/mis',
         name: "Mis",
-        component: () => import("../views/mis/main.vue")
+        component: () => import("../views/mis/main.vue"),
+        children: [
+
+            {
+                path: "home",
+                name: "MisHome",
+                component: () => import("../views/mis/main/home.vue"),
+                meta: {
+                    title: '首页',
+                    isTab: false
+                }
+            },
+            {
+                path: "dept",
+                name: "MisDept",
+                component: () => import("../views/mis/main/dept.vue"),
+                meta: {
+                    title: '部门管理',
+                    isTab: true
+                }
+            },
+            {
+                path: "role",
+                name: "MisRole",
+                component: () => import("../views/mis/main/role.vue"),
+                meta: {
+                    title: '角色管理',
+                    isTab: true
+                }
+            }
+        ]
     },
     {
         path: '/mis/login',
         name: "MisLogin",
-        component: () => import("../views/mis/login.vue")
+        component: () => import("../views/mis/login.vue"),
     },
     {
         path: '/404',

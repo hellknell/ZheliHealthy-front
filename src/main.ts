@@ -22,7 +22,6 @@ app.config.globalProperties.isAuth = (permission: string[]) => {
             }
         }
         return flag;
-
     } else {
         return false;
     }

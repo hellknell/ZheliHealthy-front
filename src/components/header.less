@@ -1,0 +1,73 @@
+@import url("../views/style");
+
+.header1 {
+  overflow: hidden;
+  padding-top: 3px;
+  height: 100px;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .logo-content {
+    float: left;
+    display: flex;
+    cursor: pointer;
+    height: inherit;
+    flex: 0.4;
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-right: 20px;
+    }
+
+    div {
+      width: max-content;
+      height: auto;
+
+      h2 {
+        font-size: 30px;
+        font-family: "Harlow Solid Italic";
+        color: @fc-3;
+        margin: 3px 0;
+      }
+
+      p {
+        font-size: 20px;
+        color: @fc-6;
+        margin: 3px 0
+      }
+
+
+    }
+
+  }
+
+  .search-content {
+    width: 400px;
+    height: 100%;
+    padding-top: 20px;
+
+    .keyword-input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .tag {
+      margin-right: 10px;
+    }
+  }
+
+  .log-in-out {
+    align-self: flex-start;
+    padding-top: -3px;
+    text-align: right;
+    float: right;
+    flex: 0.5;
+    height: 80%;
+    line-height: 60px;
+    //background-color: #444;
+  }
+
+}

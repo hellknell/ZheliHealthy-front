@@ -1,0 +1,87 @@
+@import url("../style");
+
+.page {
+  background-image: url("../../assets/login/bg.jpg");
+  background-size: cover;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .panel {
+    user-select: none;
+    display: flex;
+    width: 35%;
+    min-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 40px 60px 40px 60px;
+
+    .left {
+      width: 47%;
+      height: auto;
+      //box-sizing: border-box;
+      .logo {
+        width: 85%;
+        height: auto;
+        display: block;
+        margin-bottom: 25px;
+      }
+
+      .big {
+        width: 85%;
+        display: block;
+        height: auto;
+      }
+    }
+
+
+    .right {
+      .row {
+        .btn {
+          width: 100%;
+        }
+        .qrCode-container {
+          margin-bottom: 30px;
+          display: flex;
+          .qrCode{
+            margin-right: 0;
+          }
+        }
+        .link {
+          color: @fc-21;
+          font-size: 12px;
+          float: right;
+          user-select: none;
+          cursor: pointer;
+        }
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .title-content {
+        display: flex;
+        margin-top: 10px;
+        justify-content: center;
+        margin-bottom: 30px;
+
+        h2 {
+          font-size: 30px;
+          margin: 0;
+          color: @fc-33;
+        }
+
+        span {
+          font-size: 16px;
+          color: @fc-8;
+          margin-top: 12px;
+          margin-left: 10px;
+        }
+      }
+
+      width: 53%;
+
+    }
+  }
+}

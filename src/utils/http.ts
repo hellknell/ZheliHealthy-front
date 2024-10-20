@@ -4,9 +4,13 @@
 'use strict'
 import axios from 'axios'
 import {ElMessage} from "element-plus";
+import {getCurrentInstance} from 'vue'
+import router from "../router";
 
-let baseUrl = 'localhost:7700/his-api'
-let minioUrl = 'localhost:9000/his'
+let app = getCurrentInstance()
+// let baseUrl = app?.appContext.config.globalProperties.$baseUrl;
+let baseUrl = "https://localhost:7900/api"
+// let minioUrl = 'localhost:9000/his'
 const http = axios.create({
     baseURL: baseUrl,
     timeout: 1000 * 60,
@@ -20,7 +24,7 @@ http.interceptors.request.use(config => {
     }
     let token = localStorage.getItem("token") || null
     if (token) {
-        config.headers['token'] = token
+        config.headers.token = token
     }
     return config
 }, error => {
@@ -29,18 +33,27 @@ http.interceptors.request.use(config => {
 })
 http.interceptors.response.use(response => {
     let res = response.data
-    if (res.code === 401) {
-        ElMessage.error({
-            message: res.msg,
-            duration: 1500
-        })
-    }
+
     if (res.code !== 200) {
+
         return Promise.reject(res)
     }
     return res;
 }, error => {
-    ElMessage.error('请求失败')
-    return
+    if (error.status === 401) {
+        localStorage.removeItem("token")
+        ElMessage.error({
+            message: 'error.response.data.error',
+            type: 'error'
+        })
+        router.push({
+            name: 'MisLogin'
+        })
+    }
+    let err = error.response.data
+    ElMessage.error({
+        message: err.error,
+        type: 'error'
+    })
 })
 export default http

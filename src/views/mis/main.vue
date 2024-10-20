@@ -31,7 +31,7 @@
     </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="updatePassword">修改密码</el-dropdown-item>
+                <el-dropdown-item @click="showUpdate">修改密码</el-dropdown-item>
                 <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -214,6 +214,7 @@
         <el-tabs
             @tab-click="selectTab"
             @tab-remove="removeTab"
+
             v-model="mainTabActiveName"
             closable
             v-if="$route.meta.isTab"
@@ -231,6 +232,31 @@
 
       </main>
     </div>
+    <el-dialog
+        title="修改密码"
+        align="center"
+        :close-on-click-modal="false"
+        v-model="updatePasswordVisible"
+        width="30%">
+      <el-form label-position="left" label-width="70px" ref="updatePassForm">
+        <el-form-item label="原密码">
+          <el-input type="password" show-password v-model="password"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码">
+          <el-input type="password" show-password v-model="newPassword"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码">
+          <el-input type="password" show-password v-model="confirmPass"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="updatePasswordVisible = false">取 消</el-button>
+          <el-button type="primary" @click="doUpdate">确 定</el-button>
+        </div>
+      </template>
+
+    </el-dialog>
   </div>
 
 
@@ -243,13 +269,17 @@ import {useUserStore} from "../../store/user";
 import {storeToRefs} from "pinia";
 import {UserFilled} from "@element-plus/icons-vue";
 import {useSiteContentStore} from "../../store/siteContent"
+import userService from "../../api/user";
+import {ElMessage} from "element-plus";
+import {isPassword} from "../../utils/validate.ts";
 
+const updateDateVisible = ref(false)
 let router = useRouter()
 let route = useRoute()
 let SiteContentStore = useSiteContentStore()
 let {proxy} = getCurrentInstance()
 let userStore = useUserStore()
-let {username, avatar, updatePasswordVisible} = storeToRefs(userStore)
+let {username, avatar, password, newPassword, confirmPass, updatePasswordVisible} = storeToRefs(userStore)
 let {
   documentClientHeight,
   siteContentViewHeight,
@@ -280,10 +310,75 @@ const handleSwitch = () => {
   sidebar.sidebarFold = !sidebar.sidebarFold
 }
 const logout = () => {
+  userService.logout(res => {
+    if (res.code == '200') {
+      localStorage.removeItem("permissions")
+      localStorage.removeItem("token")
+      router.push({
+        name: 'MisLogin'
+      })
+      ElMessage.error({
+        message: '退出成功',
+        type: 'success'
 
+      })
+    }
+  }, err => {
+
+  })
 }
-const updatePassword = () => {
+const showUpdate = () => {
+  updatePasswordVisible.value = true
+  proxy.$nextTick(() => {
+    newPassword.value = ''
+    password.value = ''
+    confirmPass.value = ''
+  })
+}
+const doUpdate = () => {
+  // console.log(/password)
+  if (!isPassword(password.value)) {
+    ElMessage({
+      message: '密码格式有误',
+      type: 'error',
+    })
+    return;
+  }
+  if (!isPassword(newPassword.value)) {
+    ElMessage({
+      message: '密码格式有误',
+      type: 'error',
+    })
+    return;
+  }
+  if (confirmPass.value !== newPassword.value) {
+    ElMessage({
+      message: '两次密码输入不一致',
+      type: 'error',
+    })
+    return;
 
+  }
+  let update = {
+    password: password.value,
+    newPassword: confirmPass.value
+  }
+  userService.updatePass(update, res => {
+    updateDateVisible.value = false
+    if (res.rows) {
+      ElMessage.success({
+        message: '修改成功,请重新登录',
+        type: 'success'
+      })
+      localStorage.removeItem("token")
+      localStorage.removeItem("permissions")
+      router.push({
+        name: 'MisLogin'
+      })
+    }
+  }, err => {
+
+  })
 }
 window.onresize = () => {
   siteContentStore.resetDocumentClientHeight();

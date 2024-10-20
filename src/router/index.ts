@@ -20,7 +20,6 @@ const routes: Array<RouteRecordRaw> = [
         name: "Mis",
         component: () => import("../views/mis/main.vue"),
         children: [
-
             {
                 path: "home",
                 name: "MisHome",
@@ -28,6 +27,24 @@ const routes: Array<RouteRecordRaw> = [
                 meta: {
                     title: '首页',
                     isTab: false
+                }
+            },
+            {
+                path: "user",
+                name: "MisUser",
+                component: () => import("../views/mis/main/user/user.vue"),
+                meta: {
+                    title: '用户管理',
+                    isTab: true
+                }
+            },
+            {
+                path: "goods",
+                name: "MisGoods",
+                component: () => import("../views/mis/main/Goods/Goods.vue"),
+                meta: {
+                    title: '体检套餐',
+                    isTab: true
                 }
             },
             {

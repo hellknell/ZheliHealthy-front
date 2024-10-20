@@ -1,17 +1,30 @@
-import {ref} from 'vue'
+import {reactive, ref} from 'vue'
 import {defineStore} from 'pinia'
-import userService from "../../api/user";
+
 export const useUserStore = defineStore('user', () => {
     const username = ref('')
     const avatar = ref([]);
     const updatePasswordVisible = ref(false)
-    function login(){
-    userService.login()
+    const User = reactive({
+        name: null,
+        sex: null,
+        status: null,
+        role: undefined,
+        deptId: null,
+        deptList: [],
+        roleList: []
+    })
 
-    }
+    const password = ref()
+    const newPassword = ref()
+    const confirmPass = ref()
     return {
         username,
         avatar,
-        updatePasswordVisible
+        updatePasswordVisible,
+        User,
+        newPassword,
+        password,
+        confirmPass
     }
 })

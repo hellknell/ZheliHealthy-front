@@ -11,6 +11,7 @@ let {keyword, tags} = storeToRefs(useHeaderStore1)
     <div class="logo-content">
       <img src="../assets/front/index/logo.png" class="logo" alt="">
       <div>
+
         <h2>浙里健康</h2>
         <p>www.zhelihealthy.com</p>
       </div>
@@ -18,6 +19,7 @@ let {keyword, tags} = storeToRefs(useHeaderStore1)
 
     <div class="search-content">
       <div style="width: inherit">
+
         <el-input
             v-model="keyword"
             size="large"
@@ -42,6 +44,7 @@ let {keyword, tags} = storeToRefs(useHeaderStore1)
       <el-button type="success" size="large">登录/注册</el-button>
     </div>
   </header>
+
 </template>
 
 <style lang="less" scoped>

@@ -23,6 +23,10 @@ onMounted(() => {
   })
   search()
 })
+
+const close = () => {
+  proxy.$refs.dialogForm.resetFields()
+}
 let user = useUserStore()
 let {proxy} = getCurrentInstance()
 let User = user.User
@@ -110,7 +114,7 @@ const search = () => {
 }
 const add = () => {
 
-
+  dialog.visible = true
 }
 const deleteBatch = () => {
 
@@ -153,18 +157,21 @@ const page = reactive({
 <template>
   <div>
     <el-dialog v-model="dialog.visible" :title="dialog.dataForm.id? '修改': '新增' " :close-on-click-modal="false"
+               @close="close"
+               align="center"
                width="450">
       <el-form
+          ref="dialogForm"
           label-position="left"
           label-width="auto"
           :model="dialog.dataForm"
           :rules="dialog.dataRule"
           style="max-width: 600px"
       >
-        <el-form-item label="用户名">
-          <el-input v-model="dialog.dataForm.username" maxlength="20" clearable></el-input>
+        <el-form-item label="用户名" prop="username">
+          <el-input type="text" v-model="dialog.dataForm.username" maxlength="20" clearable></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="dialog.update">
+        <el-form-item label="密码" prop="password">
           <el-input type="password" v-model="dialog.dataForm.password" maxlength="20"></el-input>
         </el-form-item>
         <el-form-item label="姓名" prop="name">
@@ -181,7 +188,6 @@ const page = reactive({
         <el-form-item label="电话">
           <el-input v-model="dialog.dataForm.tel" maxlength="11" clearable/>
         </el-form-item>
-
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="dialog.dataForm.email" maxlength="50" clearable/>
         </el-form-item>
@@ -212,7 +218,6 @@ const page = reactive({
           <el-option v-for="item in tableData.deptList" :label="item.deptName" :value="item.id"/>
         </el-select>
       </el-form-item>
-
 
       <el-form-item>
         <el-select v-model="User.status" placeholder="状态" class="input" clearable>
@@ -252,7 +257,7 @@ const page = reactive({
       <el-table-column min-width="130" header-align="center" align="center" prop="hireDate" label="入职日期"/>
       <el-table-column min-width="100" header-align="center" align="center" prop="roles" label="角色"/>
       <el-table-column min-width="100" header-align="center" align="center" prop="dept" label="部门"/>
-      <el-table-column  header-align="center" align="center" min-width="60" prop="status" label="状态">
+      <el-table-column header-align="center" align="center" min-width="60" prop="status" label="状态">
         <template #default="scope">
           <span v-if="scope.row.status">在职</span>
           <span v-else>离职</span>

@@ -135,15 +135,85 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+        :current-page="page.pageIndex"
+        :page-size="page.pageSize"
+        :page-sizes="[10,20,50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="page.totalCount"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+    />
   </div>
+
+  <el-dialog v-model="dialog.visible" :title="dialog.dataForm.id? '修改': '新增' " :close-on-click-modal="false"
+             @close="beforeClose"
+             align="center"
+             v-if="proxy.isAuth(['ROOT','GOODS:INSERT','GOODS:UPDATE'])"
+             width="650">
+    <el-form
+        label-position="left"
+        label-width="auto"
+        ref="dialogForm"
+        :model="dialog.dataForm"
+        :rules="dialog.dataRules"
+        style="max-width: 600px"
+    >
+      <el-form-item label="套餐名称" prop="title">
+        <el-input v-model="dialog.dataForm.title" maxlength="50" clearable></el-input>
+      </el-form-item>
+      <el-form-item label="套餐编号" prop="code">
+        <el-input type="password" v-model="dialog.dataForm.code" maxlength="20"></el-input>
+      </el-form-item>
+      <el-form-item label="简介信息" prop="description">
+        <el-input type="textarea" :rows="4" v-model="dialog.dataForm.description" maxlength="200"/>
+      </el-form-item>
+      <el-form-item label="套餐现价" prop="currentPrice">
+        <el-input placeholder="请输入现价" v-model="dialog.dataForm.currentPrice" maxlength="20">
+          <template #append>
+            元
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item placeholder="请输入原价" label="套餐原价" prop="initialPrice">
+        <el-input v-model="dialog.dataForm.initialPrice" maxlength="20" clearable>
+          <template #append>
+            元
+          </template>
+        </el-input>
+        <span>提示:价格精确到分(保留小数点后两位)</span>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
+
+
 </template>
 
 
 <script setup lang="ts">
-import {getCurrentInstance, reactive} from "vue";
+import {getCurrentInstance, onMounted, reactive} from "vue";
 
 let {proxy} = getCurrentInstance();
+const dialog = reactive({
 
+  dataForm: {
+
+    id: undefined,
+    title: null,
+    code: null,
+    currentPrice: null,
+    initialPrice: null,
+    type: null,
+    partId: null,
+    description: null,
+
+
+  },
+  visible: false,
+  dataRules: {
+    name: [{}]
+  }
+})
 const dataForm = reactive({
   keyword: null,
   code: null,
@@ -159,7 +229,8 @@ const tableData = reactive({
 })
 const page = reactive({
   pageIndex: 1,
-  pageSize: 10
+  pageSize: 10,
+  totalCount: 0
 })
 const dataRules = reactive({
   keyword: [
@@ -186,7 +257,7 @@ const searchHandle = () => {
 
 }
 const addHandle = () => {
-
+  dialog.visible = true
 }
 const deletehHandle = () => {
 
@@ -210,8 +281,26 @@ const chanegSwitchHandle = () => {
 const updateGood = () => {
 
 }
+const handleSizeChange = (val) => {
+  page.pageSize = val
+  page.pageIndex = 1
+  loadGoods()
+}
+const handleCurrentChange = (val) => {
+  page.pageIndex = val
+  loadGoods()
+
+}
+const loadGoods = () => {
+}
+onMounted(() => {
+  loadGoods()
+})
 const deleteGood = () => {
 
+}
+const beforeClose = () => {
+  proxy.$refs.dialogForm.resetFields()
 }
 </script>
 <style scoped lang="less">

@@ -178,7 +178,7 @@ const page = reactive({
           <el-input v-model="dialog.dataForm.name"/>
         </el-form-item>
         <el-form-item label="性别" prop="sex">
-          <el-select v-model="dialog.dataForm.sex">
+          <el-select placeholder="性别" v-model="dialog.dataForm.sex">
             <el-option label="男" value="男">
             </el-option>
             <el-option label="女" value="女">

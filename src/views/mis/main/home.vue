@@ -32,6 +32,5 @@
 
 <script setup lang="ts"></script>
 <style scoped lang="less">
-
 @import url("home.less");
 </style>

@@ -109,7 +109,6 @@
             <el-menu-item index="促销规则"
                           @click="$router.push({name:'MisRule'})"
                           v-if="proxy.isAuth(['ROOT','RULE:SELECT'])"
-
             >
               <SvgIcon name="rule_fill" class="icon-svg"/>
               <span slot="title">促销规则</span>
@@ -224,7 +223,6 @@
               <router-view key="router.currentRoute.value.query.random"/>
             </el-card>
           </el-tab-pane>
-
         </el-tabs>
         <el-card :body-style="siteContentViewHeight" v-else>
           <router-view key="router.currentRoute.value.query.random"/>

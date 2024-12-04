@@ -14,9 +14,48 @@ const routes: Array<RouteRecordRaw> = [
                 component: () => import("../views/front/index.vue")
             },
             {
+                path: "goods_snapshot/:id/:mode",
+                name: "GoodsSnapshot",
+                component: () => import("../views/front/goods_snapshot/goods_snapshot.vue")
+            },
+            {
                 path: "goods/:id",
                 name: "FrontGoods",
                 component: () => import("../views/front/goods/goods.vue")
+            },
+            {
+                path: "goods_list",
+                name: "FrontGoodsList",
+                component: () => import("../views/front/goods_list/goods_list.vue")
+            },
+
+            {
+                path: "goods/customer",
+                name: "FrontCustomer",
+                component: () => import("../views/front/customer/customer.vue"),
+                children: [
+                    {
+                        path: "order",
+                        name: "FrontOrder",
+                        component: () => import("../views/front/customer/order.vue")
+                    },
+                    {
+                        path: "chat",
+                        name: "FrontIM",
+                        component: () => import("../views/front/customer/aichat.vue")
+                    },
+                    {
+                        path: "mine",
+                        name: "FrontMine",
+                        component: () => import("../views/front/customer/mine.vue")
+                    },
+                    {
+                        path: "appointment",
+                        name: "FrontAppointment",
+                        component: () => import("../views/front/customer/appointment.vue")
+                    },
+                ]
+
             }
         ]
     },
@@ -35,11 +74,38 @@ const routes: Array<RouteRecordRaw> = [
                 }
             },
             {
+                path: "rule",
+                name: "MisRule",
+                component: () => import("../views/mis/main/rule/rule.vue"),
+                meta: {
+                    title: '促销规则',
+                    isTab: true
+                }
+            },
+            {
                 path: "user",
                 name: "MisUser",
                 component: () => import("../views/mis/main/user/user.vue"),
                 meta: {
                     title: '用户管理',
+                    isTab: true
+                }
+            },
+            {
+                path: "order",
+                name: "MisOrder",
+                component: () => import("../views/mis/main/order/order.vue"),
+                meta: {
+                    title: '订单管理',
+                    isTab: true
+                }
+            },
+            {
+                path: "appointment",
+                name: "MisAppointment",
+                component: () => import("../views/mis/main/appointment/appointment.vue"),
+                meta: {
+                    title: '预约管理',
                     isTab: true
                 }
             },
@@ -87,7 +153,6 @@ const routes: Array<RouteRecordRaw> = [
         redirect: '/404'
     }
 ]
-
 const router = createRouter({
     history,
     routes
@@ -104,7 +169,7 @@ const router = createRouter({
 //             } else {
 //                 next()
 //             }
-//         } else if (fullPath.startsWith("/mis/") || fullPath != ("/mis/login")) {
+//         } else if (fullPath.startsWith("/mis/") && fullPath != ("/mis/login")) {
 //             if (permissions == '' || permissions == null || token === '' || token === null) {
 //                 next({name: 'MisLogin'})
 //             } else {

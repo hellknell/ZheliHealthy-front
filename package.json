@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:no-vue-tsc": "vite build"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
@@ -19,6 +20,7 @@
     "pinia": "^2.2.2",
     "vite-plugin-svg-icons": "^2.0.1",
     "vue": "^3.4.37",
+    "vue-native-websocket-vue3": "^3.1.8",
     "vue-router": "^4.4.5"
   },
   "devDependencies": {

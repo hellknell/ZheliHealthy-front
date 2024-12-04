@@ -10,10 +10,10 @@ import {createSvgIconsPlugin} from 'vite-plugin-svg-icons'
 export default defineConfig({
     plugins: [vue(),
         AutoImport({
-            resolver: [ElementPlusResolver()]
+            resolvers: [ElementPlusResolver()]
         }),
         Components({
-            resolver: [ElementPlusResolver()]
+            resolvers: [ElementPlusResolver()]
         }),
         createSvgIconsPlugin({
             iconDirs: [path.resolve(process.cwd(), "src/icons/svg")],
@@ -24,6 +24,12 @@ export default defineConfig({
     server: {
         host: "localhost",
         port: 7600,
-        cors: true
+        cors: true,
+        proxy:{
+            '/api/chat':{
+                target:"http://127.0.0.1:2024/",
+                changeOrigin: true,
+            },
+        }
     },
 })

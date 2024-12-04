@@ -1,0 +1,166 @@
+@import "../../style.less";
+
+.el-form-item {
+  margin-right: 15px !important;
+}
+
+.keyword {
+  width: 230px;
+}
+
+.mold {
+  float: right;
+  margin-right: 0 !important;
+}
+
+.order-list {
+  min-height: 500px;
+
+  .order {
+    border: 1px solid @bc-1;
+    margin-bottom: 20px;
+    width: 100%;
+    cursor: default;
+
+    .header {
+      overflow: hidden;
+      font-size: 13px;
+      color: @fc-3;
+      background-color: @bgc-1;
+      padding: 10px 20px;
+
+      .createTime {
+        margin-top: 2px;
+        margin-right: 30px;
+        user-select: none;
+        float: left;
+      }
+
+      .orderNo {
+        float: left;
+      }
+
+      .detail {
+        float: right;
+        cursor: pointer;
+        user-select: none;
+
+        &:hover {
+          color: @fc-27;
+        }
+
+      }
+
+    }
+
+    .content {
+      display: flex;
+      padding: 20px;
+      user-select: none;
+
+      img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .info {
+        width: 290px;
+        margin-left: 20px;
+        border-right: 1px dashed @bc-1;
+        padding-right: 25px;
+
+        h4 {
+          font-size: 15px;
+          color: @fc-1;
+          font-weight: normal;
+          margin-top: 0;
+          margin-bottom: 5px;
+          padding: 0;
+        }
+
+        p {
+          margin: 0;
+          padding: 0;
+          font-size: 12px;
+          color: @fc-3;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          line-height: 1.5;
+        }
+      }
+
+      .label {
+        display: block;
+        text-align: center;
+        font-size: 13px;
+        color: @fc-3;
+        margin-top: 10px;
+      }
+
+      .value {
+        display: block;
+        text-align: center;
+        font-size: 13px;
+        color: @fc-23;
+        margin-top: 6px;
+      }
+
+      .border {
+        border-right: dashed 1px;
+        padding: 0 16px;
+      }
+
+      .price, .amount {
+        .border;
+      }
+      .number {
+        .border;
+
+        .value {
+          color: @fc-3;
+        }
+      }
+
+      .status {
+        .border;
+
+        .value {
+          color: @fc-23;
+          font-size: 14px;
+        }
+      }
+
+      .operate {
+        flex-grow: 1;
+        text-align: center;
+        width: 100px;
+        margin-left: 20px;
+        padding-top: 15px;
+      }
+    }
+
+  }
+}
+
+.empty {
+  height: 600px;
+}
+
+.appointment {
+  border: 1px solid @bc-19;
+  border-radius: 3px;
+  margin: 0 10px 0 10px;
+  padding: 0 20px;
+
+  legend {
+    padding: 0 10px;
+    margin-bottom: 20px;
+
+    h4 {
+      margin: 0;
+      font-size: 15px;
+    }
+  }
+}

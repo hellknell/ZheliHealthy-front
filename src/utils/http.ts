@@ -9,7 +9,7 @@ import router from "../router";
 
 let app = getCurrentInstance()
 // let baseUrl = app?.appContext.config.globalProperties.$baseUrl;
-let baseUrl = "https://localhost:7900/api"
+let baseUrl ="http://139.9.192.29:7900/api"
 // let minioUrl = 'localhost:9000/his'
 const http = axios.create({
     baseURL: baseUrl,

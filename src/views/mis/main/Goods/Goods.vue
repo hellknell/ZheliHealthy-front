@@ -1,11 +1,10 @@
 <template>
   <div v-if="proxy.isAuth(['ROOT','GOODS:SELECT'])">
     <el-form ref="form" :inline="true" :model="dataForm" :rules="dataRules">
-      <el-form-item prop="keyword">
+      <el-form-item style="max-width: 100px" prop="keyword">
         <el-input v-model="dataForm.keyword" clearable="clearable" maxlength="50" placeholder="套餐名称">
         </el-input>
       </el-form-item>
-
       <el-form-item prop="code">
         <el-input v-model="dataForm.code" class="input" clearable="clearable" maxlength="50" placeholder="套餐编号">
         </el-input>
@@ -39,15 +38,13 @@
         <el-button v-if="proxy.isAuth(['ROOT','GOODS:INSERT'])" type="primary" @click="addHandle()">
           新增
         </el-button>
-        <el-button v-if="proxy.isAuth(['ROOT','GOODS:DELETE'])" type="danger" @click="searchHandle()">
+        <el-button v-if="proxy.isAuth(['ROOT','GOODS:DELETE'])" type="danger" @click="deletehHandle">
           批量删除
         </el-button>
       </el-form-item>
 
-
       <el-form-item class="mold">
-
-        <el-radio-group v-model="dataForm.statusLabel" @change="changeHandle()">
+        <el-radio-group v-model="dataForm.statusLabel" @change="searchHandle">
           <el-radio-button label="全部"></el-radio-button>
           <el-radio-button label="已上架"></el-radio-button>
           <el-radio-button label="已下架"></el-radio-button>
@@ -95,7 +92,6 @@
         </template>
       </el-table-column>
 
-
       <el-table-column align="center" header-align="center" label="状态" min-width="80" prop="status">
         <template #default="scope">
           <el-switch v-model="scope.row.status" active-text="上架"
@@ -128,7 +124,7 @@
               v-if="proxy.isAuth(['ROOT','GOODS:DELETE'])"
               :disabled="scope.row.salesVolume>0 | scope.row.status"
               type="text"
-              @click="deleteGood(scope.row.id)"
+              @click="deletehHandle(scope.row.id)"
           >
             删除
           </el-button>
@@ -138,7 +134,7 @@
     <el-pagination
         :current-page="page.pageIndex"
         :page-size="page.pageSize"
-        :page-sizes="[10,20,50]"
+        :page-sizes="[5,10,20,50]"
         :total="page.totalCount"
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="handleSizeChange"
@@ -149,7 +145,7 @@
   <el-dialog v-if="proxy.isAuth(['ROOT','GOODS:INSERT','GOODS:UPDATE'])" v-model="dialog.visible" :center="true"
              :close-on-click-modal="false"
              :title="dialog.dataForm.id? '修改': '新增' "
-             width="650"
+             width="750"
              @close="beforeClose">
     <el-form
         ref="dialogForm"
@@ -157,13 +153,13 @@
         :rules="dialog.dataRules"
         label-position="left"
         label-width="auto"
-        style="max-width: 680px"
+        style="max-width: 750px"
     >
       <el-form-item label="套餐名称" prop="title">
         <el-input v-model="dialog.dataForm.title" clearable maxlength="50"></el-input>
       </el-form-item>
       <el-form-item label="套餐编号" prop="code">
-        <el-input v-model="dialog.dataForm.code" maxlength="20" type="password"></el-input>
+        <el-input v-model="dialog.dataForm.code" maxlength="20"></el-input>
       </el-form-item>
       <el-form-item label="简介信息" prop="description">
         <el-input v-model="dialog.dataForm.description" :rows="4" maxlength="200" type="textarea"/>
@@ -188,7 +184,7 @@
       </el-form-item>
 
       <el-form-item label="折扣列表">
-        <el-select v-model="dialog.ruleList" placeholder="选择折扣信息">
+        <el-select v-model="dialog.dataForm.ruleId" placeholder="选择折扣信息">
           <el-option v-for="item in dialog.ruleList" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
@@ -196,14 +192,15 @@
       <el-form-item label="封面图片" prop="image">
         <el-upload
             :action="dialog.upload.action"
+            accept=".jpg,.png,.jpeg"
             :before-upload="imageBeforeUpload"
             :data="dialog.upload.data"
-            :headers="dialog.upload.haeders"
+            :headers="dialog.upload.headers"
             :on-error="imageBeforeUploadError"
             :on-success="imageUploadSuccess"
             class="image-uploader"
         >
-          <el-image v-if="dialog.imageUrl" :src="dialog.imageUrl" class="image" style="width: 100%;height: 100%"/>
+          <el-image v-if="dialog.imageUrl" :src="dialog.imageUrl" class="image"/>
           <el-icon v-else class="image-uploader-icon">
             <Plus/>
           </el-icon>
@@ -226,7 +223,7 @@
           <span style="margin-left: 4px">提示:输入标签后按下回车</span>
         </div>
         <div class="tags">
-          <el-tag v-for="item in dialog.dataForm.tags" :disable-transitions="false" closable @close="closeTag(item)">
+          <el-tag v-for="item in dialog.dataForm.tag" :disable-transitions="false" closable @close="closeTag(item)">
             {{ item }}
           </el-tag>
         </div>
@@ -246,8 +243,8 @@
       <el-form-item label="体检内容">
         <el-row v-for="(item,$index) in dialog.items" :key="$index" :gutter="10" class="item-row">
           <el-col span="6">
-            <el-select v-model="item.type" clearable="clearable" default-first-option placeholder="检查类型"
-                       style="width: 100%">
+            <el-select v-model="item.type" clearable="clearable"
+                       style="width: 100px">
               <el-option label="科室检查" value="科室检查"/>
               <el-option label="实验室检查" value="实验室检查"/>
               <el-option label="医技检查" value="医技检查"/>
@@ -270,8 +267,9 @@
     </el-form>
     <template #footer>
       <div style="text-align: right">
-        <el-button @click="dialog.visible=false">取消</el-button>
         <el-button type="danger" @click="addItem">添加项目</el-button>
+        <el-button @click="dialog.visible=false">取消</el-button>
+
 
         <el-button @click="dataSubmit">确认</el-button>
       </div>
@@ -315,37 +313,44 @@
 <script lang="ts" setup>
 import {getCurrentInstance, onMounted, reactive} from "vue";
 import {Delete, Download, Plus, Upload, WarningFilled} from "@element-plus/icons-vue";
+import goodsService from "../../../../api/goods";
+import {ElMessage, UploadFile, UploadFiles} from "element-plus";
+import ruleService from "../../../../api/rule";
+import router from "../../../../router";
 
 let {proxy} = getCurrentInstance();
 const documentDialog = reactive({
   upload: {
-    action: `${proxy.$baseUrl}/mis/goods/uploadCheckupExcel`,
+    action: `${proxy.$baseUrl}/mis/goods/updateCheckupExcel`,
     headers: {
       token: localStorage.getItem("token")
     },
     data: {
       id: null,
-      hasCheckup: null
+      hasCheckup: false
     }
   },
-  visible:
-      true
+  visible: false
 })
 const dialog = reactive({
   items: [{}],
   newTag: null,
   imageUrl: null,
   upload: {
-    action: `${proxy.$baseUrl}/mis/goods/uoloadImage`,
-    haeders: localStorage.getItem("token"),
+    action: `${proxy.$baseUrl}/mis/goods/uploadImage`,
+    headers: {
+      token: localStorage.getItem("token")
+    },
     data: {
       id: null
     }
   },
+  checkup: null,
   ruleList: [],
   dataForm: {
-    id: undefined,
+    id: null,
     title: null,
+    image: null,
     code: null,
     currentPrice: null,
     initialPrice: null,
@@ -353,7 +358,7 @@ const dialog = reactive({
     partId: null,
     description: null,
     ruleId: null,
-    tags: [],
+    tag: [],
 
   },
   visible: false,
@@ -362,15 +367,10 @@ const dialog = reactive({
       {
         required: true,
         message: "套餐名称不能为空"
-
       },
       {
         min: 2,
         message: '套餐名称不能少于两个字符'
-      },
-      {
-        pattern: '^[a-zA-Z0-9\u4e00-\u9fa5]{2, 50}$',
-        message: '套餐名称格式错误'
       }
     ],
     code: [
@@ -382,10 +382,6 @@ const dialog = reactive({
       {
         min: 6,
         message: '套餐编号不能少于6个字符'
-      },
-      {
-        pattern: '^[a-zA-Z0-9]{6, 20}$',
-        message: '套餐名称格式错误'
       }
     ],
     description: [
@@ -433,7 +429,7 @@ const tableData = reactive({
 const page = reactive({
   pageIndex: 1,
   pageSize: 10,
-  totalCount: 0
+  totalCount: 10
 })
 const dataRules = reactive({
   keyword: [
@@ -458,34 +454,168 @@ const dataRules = reactive({
 })
 const searchHandle = () => {
 
+  proxy.$refs['form'].validate(valid => {
+    if (valid) {
+      loadGoods(dataForm)
+    } else {
+      return false;
+    }
+  })
+
 }
 const addHandle = () => {
-  dialog.visible = true
+  dialog.dataForm.id = null
+  dialog.dataForm.image = null
+  dialog.imageUrl = null
+
+  dialog.dataForm.ruleId = null
+  dialog.ruleList = []
+
+  dialog.checkup = null
+  dialog.items = [{}]
+
+  dialog.newTag = null
+
+  dialog.dataForm.tag = []
+
+  proxy.$nextTick(() => {
+    proxy.$refs['dialogForm'].resetFields()
+    loadAllRules()
+  })
 }
-const deletehHandle = () => {
+const deletehHandle = (id) => {
 
+  let ids = id != null ? [id] : tableData.selecions.map(item => item.id)
+  if (ids.length == 0) {
+    proxy.$message({
+      message: '请选择至少一条记录',
+      type: 'warning'
+    })
+    return  dialog.visible = true
+
+
+  }
+  proxy.$confirm('确定要删除选择的记录?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '确定',
+    type: 'warning'
+  }).then(() => {
+    let parms = {
+      ids: ids
+    }
+    goodsService.deleteGoodsById(parms, res => {
+      if (res.rows > 0) {
+        ElMessage.success({
+          message: '删除成功'
+        })
+      } else {
+        ElMessage.warning({
+          message: '未删除任何记录'
+        })
+      }
+    }, err => {
+
+    })
+  })
 }
-
-const selectChangeHandle = () => {
-
+const selectChangeHandle = (val) => {
+  tableData.selecions = val
 }
 const changeHandle = () => {
 
 }
-const selectHandle = () => {
+const selectHandle = (row, index) => {
+  if (row.status == true || row.salesVolumn > 0) {
+    return false
+  }
+  return true
+
 
 }
-const documentHandle = (id, checkUp) => {
+const documentHandle = (id, hasCheckUp) => {
+  documentDialog.upload.data = {
+    id: id,
+    hasCheckup: hasCheckUp
+  }
+  documentDialog.visible = true
+}
+const chanegSwitchHandle = (id, status) => {
+  console.log(status)
+  let json = {
+    id: id,
+    status: status
+  }
+  goodsService.insertOrAddGoods(json, res => {
+        if (res.code === 200) {
+          ElMessage.success({
+            message: '修改商品状态成功'
+          })
+          loadGoods()
+        }
+      }, err => {
+
+      }
+  )
+
 
 }
-const chanegSwitchHandle = () => {
+const updateGood = (id) => {
+  dialog.upload.data.id = id
+  dialog.dataForm.id = id
+  dialog.dataForm.image = null
+  dialog.imageUrl = null
+  dialog.newTag = null
+  dialog.checkup = null
+  dialog.items = []
+  dialog.dataForm.tag = []
+  dialog.visible = true;
 
-}
-const updateGood = () => {
 
+  proxy.$nextTick(() => {
+
+    proxy.$refs['dialogForm'].resetFields();
+
+    let json = {
+      id: id
+    }
+    loadAllRules()
+    goodsService.searchGoodById(json, res => {
+      if (res.code === 200) {
+        dialog.dataForm.code = res.result.code
+        dialog.dataForm.type = res.result.type
+        dialog.dataForm.title = res.result.title
+        dialog.dataForm.description = res.result.description
+        dialog.dataForm.ruleId = res.result.ruleId
+        dialog.dataForm.partId = res.result.partId + ""
+        dialog.dataForm.image = res.result.image
+        dialog.imageUrl = `${proxy.$minioUrl}/his/${res.result.image}`
+        dialog.dataForm.initialPrice = res.result.initialPrice
+        dialog.dataForm.currentPrice = res.result.currentPrice
+        dialog.dataForm.tag = res.result.tag ? JSON.parse(res.result.tag) : []
+        let typeJson = {
+          'checkup1': '科室检查',
+          'checkup2': '实验室检查',
+          'checkup3': '医技检查',
+          'checkup4': '其他检查'
+        }
+        for (let key in typeJson) {
+          if (res.result.hasOwnProperty(key)) {
+            let checkup = JSON.parse(res.result[key])
+            for (let one of checkup) {
+              dialog.items.push({type: typeJson[key], title: one.title, content: one.content})
+            }
+          }
+        }
+      }
+
+    }, err => {
+
+    })
+  })
 }
 const closeTag = (item) => {
-
+  let i = dialog.dataForm.tag.indexOf(item);
+  dialog.dataForm.tag.splice(i, 1)
 }
 
 const handleSizeChange = (val) => {
@@ -498,49 +628,248 @@ const handleCurrentChange = (val) => {
   loadGoods()
 
 }
-const loadGoods = () => {
+
+const loadGoods = (form) => {
+  tableData.loading = true
+  let param;
+  if (form == null) {
+    param = {
+      keyword: null,
+      code: null,
+      status: null,
+      type: null,
+      partId: null,
+      pageIndex: page.pageIndex,
+      pageSize: page.pageSize
+    }
+  } else {
+    param = {
+      keyword: form.keyword,
+      code: form.code,
+      status: form.form,
+      type: form.type,
+      partId: form.partId,
+      pageIndex: page.pageIndex,
+      pageSize: page.pageSize
+    }
+  }
+  if (dataForm.statusLabel == '已上架') {
+    param.status = true
+  }
+  if (dataForm.statusLabel == '已下架') {
+    param.status = false
+  }
+  goodsService.getAllGoods(param, res => {
+    tableData.loading = false
+    if (res.code === 200) {
+      tableData.dataList = res.page.list;
+      page.pageIndex = res.page.pageNum;
+      page.pageSize = res.page.pageSize
+      page.totalCount = res.page.total
+    }
+  }, err => {
+
+  })
+
+}
+const loadAllRules = () => {
+  ruleService.searchAllRules(res => {
+    if (res.code === 200) {
+      dialog.ruleList = res.result;
+    }
+  }, err => {
+  })
 }
 onMounted(() => {
   loadGoods()
 })
-const deleteGood = () => {
-
-}
 const beforeClose = () => {
-  proxy.$refs.dialogForm.resetFields()
+  proxy.$refs['dialogForm'].resetFields()
+  dialog.visible = false
 }
-const imageBeforeUpload = () => {
+const imageBeforeUpload = (file) => {
+  let size = file.size / 1024 / 1024;
+
+  if (size > 2) {
+    ElMessage.error({
+      message: '图片上传大小超过2M',
+      duration: 1200
+    })
+    return false;
+  }
+  return true;
 
 }
-const imageUploadSuccess = () => {
-
+const imageUploadSuccess = (resp: any, uploadFile: UploadFile, uploadFiles: UploadFiles) => {
+  if (resp.code === 200) {
+    dialog.dataForm.image = resp.path;
+    dialog.imageUrl = `${proxy.$minioUrl}/his/${resp.path}`
+    console.log(dialog.imageUrl)
+    ElMessage.success({
+      message: "图片上传成功"
+    })
+  }
 }
-const imageBeforeUploadError = () => {
+const imageBeforeUploadError = (e) => {
+  ElMessage.error({
+    message: "图片上传失败"
+  });
+  console.error(e)
 
 }
 const enterTag = () => {
-  dialog.dataForm.tags.push(dialog.newTag)
+
+  if (dialog.newTag != null || dialog.newTag != '') {
+    if (dialog.dataForm.tag.includes(dialog.newTag)) {
+
+      ElMessage.warning({
+        message: "不能添加重复标签",
+        duration: 1200
+      })
+
+    } else {
+      dialog.dataForm.tag.push(dialog.newTag)
+      dialog.newTag = null
+    }
+
+  }
+
 }
 const deleteItem = (index) => {
-
+  if (dialog.items.length == 1) {
+    ElMessage.error({
+      message: "不能删除仅存的行",
+      duration: 1200
+    })
+  } else {
+    dialog.items.splice(index, 1)
+  }
 }
 const addItem = () => {
-
+  dialog.items.push({})
 }
 const dataSubmit = () => {
+  proxy.$refs['dialogForm'].validate(valid => {
+    if (valid) {
+      let typeJson = {
+        '科室检查': 'checkup1',
+        '实验室检查': 'checkup2',
+        '医技检查': 'checkup3',
+        '其他检查': 'checkup4'
+      }
+      let temp = {}
+      for (let item of dialog.items) {
+        if (item.type === '' || item.type === null) {
+          ElMessage.error({
+            message: '体检类型不能为空'
+          })
+        }
+        if (item.title === '' || item.title === null) {
+          ElMessage.error({
+            message: '体检项不能为空'
+          })
 
+        }
+        if (item.content === '' || item.content === null) {
+          ElMessage.error({
+            message: '体检内容不能为空'
+          })
+        }
+        let type = typeJson[item.type]
+        if (!temp.hasOwnProperty(type)) {
+          temp[type] = [{title: item.title, content: item.content}]
+        } else {
+          temp[type].push({
+            title: item.title, content: item.content
+          })
+        }
+      }
+      ['checkup1', 'checkup2', 'checkup3', 'checkup4'].forEach((one) => {
+        if (!temp.hasOwnProperty(one)) {
+          temp[one] = null
+        }
+      })
+      dialog.checkup = temp
+      let tag = dialog.dataForm.tag
+      let json = {
+        id: dialog.dataForm.id,
+        title: dialog.dataForm.title,
+        code: dialog.dataForm.code,
+        description: dialog.dataForm.description,
+        image: dialog.dataForm.image,
+        initialPrice: dialog.dataForm.initialPrice,
+        currentPrice: dialog.dataForm.currentPrice,
+        type: dialog.dataForm.type,
+        ruleId: dialog.dataForm.ruleId,
+        tag: tag.length > 0 ? tag : null,
+        partId: dialog.dataForm.partId,
+        checkup1: temp.checkup1,
+        checkup2: temp.checkup2,
+        checkup3: temp.checkup3,
+        checkup4: temp.checkup4
+      }
+      goodsService.insertOrAddGoods(json, res => {
+        if (res.code === 200) {
+          if (json.id) {
+            ElMessage.success({
+              message: "更新成功"
+            })
+          } else {
+            ElMessage.success({
+              message: "添加成功"
+            })
+          }
+          dialog.visible = false;
+          loadGoods()
+        }
+      }, err => {
+
+      })
+
+    } else {
+      return false;
+    }
+  })
 }
-const download = () => {
 
+const documentBeforeUpload = (file) => {
+  let size = file.size / 1024 / 1024;
+  if (size > 20) {
+    ElMessage.error({
+      message: '文件大小超过20M'
+    })
+    return false;
+  }
+  return true;
 }
-const documentBeforeUpload = () => {
-
-}
-const documentUploadError = () => {
-
+const documentUploadError = (e) => {
+  ElMessage.error({
+    message: '文件上传失败'
+  })
+  console.log(e)
 }
 const documentUploadSuccess = () => {
-
+  documentDialog.visible = false
+  ElMessage.success({
+    message: '文件上传成功',
+    onClose: () => {
+      loadGoods()
+    }
+  })
+}
+const viewHandle = (id) => {
+  router.push({name: 'FrontGoods', params: {id: id}})
+}
+const download = () => {
+  let token = localStorage.getItem("token")
+  let id = documentDialog.upload.data.id
+  let url = `${proxy.$baseUrl}/mis/goods/downloadCheckupExcel?token=${token}&id=${id}`
+  let a = document.createElement('a');
+  a.href = url
+  a.click()
+  setTimeout(() => {
+    documentDialog.visible = false
+  }, 1000)
 }
 
 </script>
@@ -548,5 +877,5 @@ const documentUploadSuccess = () => {
 @import "../../../../assets/scss/index.scss";
 </style>
 <style lang="less" scoped>
-@import "Goods";
+@import "Goods.less";
 </style>

@@ -64,8 +64,8 @@ const login = () => {
 <template>
   <!--  <div>This is Login</div>-->
   <!--  <div v-if="proxy.isAuth(['ROOT','APPOINTMENT:SELECT'])"></div>-->
-  <div class="page">
-    <div class="panel">
+  <div class="page" >
+    <div class="panel" >
       <div class="left">
         <img src="../../assets/login/logo.png" alt="" class="logo">
         <img src="../../assets/login/big.png" alt="" class="big">
@@ -79,16 +79,16 @@ const login = () => {
         <div v-if="!qr.qrCodeVisible">
           <div class="row">
             <el-input v-model="loginForm.userName" prefix-icon="user"
-                      size="large" clearable placeholder="请输入用户名">
+                      @keydown.enter="login"  size="large" clearable placeholder="请输入用户名">
             </el-input>
           </div>
           <div class="row">
             <el-input type="password" v-model="loginForm.passWord" prefix-icon="Lock"
-                      size="large" show-password clearable placeholder="请输入密码">
+                      size="large" show-password clearable placeholder="请输入密码"  @keydown.enter="login" >
             </el-input>
           </div>
           <div class="row">
-            <el-button class="btn" type="primary" style="width: 100%;" @click="login">登录
+            <el-button class="btn" type="primary" style="width: 100%;" @click="login"> 登录
             </el-button>
           </div>
           <div class="row"><a href="#" @click="qr.qrCodeVisible=true" class="link">二维码登录</a></div>

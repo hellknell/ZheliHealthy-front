@@ -7,7 +7,7 @@
   user-select: none;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
 
   .logo-content {
     float: left;
@@ -47,7 +47,7 @@
   .search-content {
     width: 400px;
     height: 100%;
-    padding-top: 20px;
+    line-height: 100px;
 
     .keyword-input {
       width: 100%;
@@ -56,18 +56,63 @@
 
     .tag {
       margin-right: 10px;
+      margin-top: -25px;
+      cursor: pointer;
     }
   }
 
   .log-in-out {
-    align-self: flex-start;
-    padding-top: -3px;
+    margin-top: -10px;
+    justify-content: flex-end;
     text-align: right;
     float: right;
-    flex: 0.5;
-    height: 80%;
-    line-height: 60px;
+    line-height: 80px;
+    display: flex;
+
+    .btn {
+      display: flex;
+      margin-left: 17px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: flex-end;
+
+
+      .el-icon {
+        margin-top: 1px;
+        position: relative;
+
+      }
+
+      span {
+        position: relative;
+        font-size: 16px;
+        margin-left: 5px;
+        color: @fc-2;
+
+        &:hover {
+          color: @fc-22
+        }
+      }
+    }
+
     //background-color: #444;
   }
 
+  .dialog {
+    .el-row {
+      margin-bottom: 17px;
+
+      .receive-btn {
+        width: 100%;
+        outline: none;
+      }
+
+    }
+
+    .lg-btn {
+      width: 100%;
+      height: 45px;
+      margin-top: 10px;
+    }
+  }
 }

@@ -3,7 +3,6 @@
 import http from "../../utils/http.ts";
 
 let roleService = {
-
     getAllRoles: function (resolve, reject) {
         http({
             url: "/mis/role/searchAllRole",

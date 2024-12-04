@@ -1,0 +1,109 @@
+@import "../../style.less";
+
+.summary-container {
+  min-height: 630px;
+
+  .box-card {
+    user-select: none;
+    cursor: default;
+
+    .info {
+      display: flex;
+
+      .right {
+        margin-left: 15px;
+        flex-grow: 1;
+
+        .base {
+          margin-bottom: 10px;
+          overflow: hidden;
+          font-size: 14px;
+          color: @fc-1;
+
+          span {
+            border-right: 1px solid @bc-7;
+            padding: 0 30px;
+
+            &:first-of-type {
+              padding-left: 0;
+            }
+
+            &:last-of-type {
+              border-right: none;
+            }
+          }
+
+          .operate {
+            display: flex;
+            float: right;
+            cursor: pointer;
+
+            .el-icon {
+              margin-top: 2px;
+              color: @fc-27;
+
+            }
+
+            div {
+              font-size: 14px;
+              margin-left: 5px;
+              color: @fc-27;
+            }
+          }
+        }
+
+        p {
+          margin-top: 0;
+          margin-bottom: 6px;
+          font-size: 13px;
+          color: @fc-3
+        }
+      }
+
+    }
+  }
+}
+
+.statistic-box {
+  padding: 20px;
+
+  .title {
+    font-size: 14px;
+    align-items: center;
+  }
+}
+
+.image-uploader {
+  margin: 0 auto;
+  width:50px;
+  height: 50px;
+  border: 1px dashed var(--el-border-color);
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.photo {
+  text-align: center;
+}
+
+.image-uploader-icon {
+  text-align: center;
+  width: 50px;
+  height: 50px;
+  color: #8c939d;
+  font-size: 28px;
+}
+
+.image {
+  width: 90px;
+  height: 90px;
+}
+
+.el-statistic {
+  --el-statistic-content-font-size: 30px
+}
+
+.footer {
+  text-align: center;
+}

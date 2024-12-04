@@ -61,7 +61,6 @@ const dialog = reactive({
   },
   dataRule: {
     username: [],
-
     password: [],
     name: [],
     sex: '',
@@ -101,7 +100,7 @@ const search = () => {
           tableData.dataList = res.page.list
           page.pageIndex = res.page.pageNum
           page.pageSize = res.page.pageSize
-          page.totalCount = res.page.totalCount
+          page.totalCount = res.page.total
 
         }
       }, err => {
@@ -282,7 +281,6 @@ const page = reactive({
           </el-button>
         </template>
       </el-table-column>
-
     </el-table>
 
     <el-pagination

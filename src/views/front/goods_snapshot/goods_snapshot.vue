@@ -33,15 +33,6 @@
         </div>
       </div>
 
-
-      <div class="row">
-        <label>购买数量:</label>
-        <div class="info">
-          <el-input-number @change="changeHandle" v-model="dataForm.number" max="10" min="1"
-                           size="small"></el-input-number>
-        </div>
-      </div>
-
       <div class="row">
 
         <label>服务承诺:</label>
@@ -56,15 +47,6 @@
           <span class="service-tag">随时退</span>
         </div>
       </div>
-      <div class="operate">
-        <div class="consult-btn" @click="consultHandle">
-          <img class="consult-icon" src="../../../assets/front/goods/consult.png" alt="">
-          <span class="">立即咨询</span>
-        </div>
-        <div class="pay-btn" @click="pay">立即付款</div>
-      </div>
-
-
     </div>
   </div>
   <el-divider/>
@@ -131,7 +113,6 @@
         </div>
       </fieldset>
     </div>
-
 
     <!--    预约内容-->
 
@@ -289,33 +270,16 @@
       </div>
     </fieldset>
   </div>
-  <el-dialog v-model="payment.visible" :close-on-click-modal="false" center width="350px">
-    <div v-if="payment.result" class="pay-success">
-      <el-result icon="success" title="付款成功"/>
-    </div>
-    <template #footer>
-      <div style="text-align: center;">
-        <el-button type="success" @click="closeHandle">关闭弹窗</el-button>
-      </div>
-    </template>
-  </el-dialog>
 </template>
-<script lang="ts" setup>
+
+
+<script setup lang="ts">
 import {getCurrentInstance, onMounted, reactive} from "vue";
 import router from "../../../router";
 import goodsService from "../../../api/goods";
 import {ElMessage} from "element-plus";
-import customerService from "../../../api/customer";
 
-const payment = reactive({
-  visible: false,
-  result: false
-})
-const {proxy} = getCurrentInstance()
-const dataForm = reactive({
-  number: 1
-
-})
+let {proxy} = getCurrentInstance()
 const data = reactive({
   code: null,
   title: null,
@@ -336,88 +300,44 @@ const data = reactive({
   count_4: 0,
   checkupCount: 0
 })
-const pay = () => {
-  customerService.checkLogin(res => {
-    if (!res.result) {
-      ElMessage.error({
-        message: '请先登录'
-      })
-    } else {
-      proxy.$confirm('你确定购买该套餐吗?', '提示信息', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'info'
-      }).then(() => {
-        window.open("http://139.9.192.29:7900/api/front/order/createPayment?goodsId=" + router.currentRoute.value.params.id + "&number=" + dataForm.number + "&token=" + localStorage.getItem("token"))
-        let token = localStorage.getItem("token");
-        proxy.$socket.sendObj({
-          opt: 'ping',
-          identity: 'customer',
-          token: token
-        })
-      })
-    }
-  }, err => {
-  })
-
-}
-proxy.$socket.onmessage = function (resp) {
-  let data = resp.data
-  let json = JSON.parse(data);
-  console.log(json)
-  if (json.result) {
-    payment.visible = true
-    payment.result = true
-  }
-  delete proxy.$socket.onmessage
-}
-const changeHandle = () => {
-}
-const consultHandle = () => {
-
-}
 onMounted(() => {
-  const id = router.currentRoute.value.params.id
-  let params = {
-    id: id,
-    status: true
+  let snapshotId = router.currentRoute.value.params.id
+  let url = router.currentRoute.value.params.mode
+  let json = {
+    snapshotId: snapshotId
   }
-  window.scrollTo(0, 0)
-  goodsService.selectById(params, res => {
-    if (res.result != null) {
+  goodsService.searchSnapshot(json, url, res => {
+    if (res.code === 200) {
       data.code = res.result.code,
-          data.title = res.result.title,
-          data.img = `${proxy.$minioUrl}/his/${res.result.image}`
+          data.title = res.result.title, data.img = `${proxy.$minioUrl}/his/${res.result.image}`
       data.description = res.result.description,
           data.type = res.result.type,
           data.initialPrice = res.result.initialPrice,
           data.currentPrice = res.result.currentPrice,
           data.ruleName = res.result.ruleName,
-          data.tags = JSON.parse(res.result.tag),
-          data.checkup_4 = JSON.parse(res.result.checkup4),
-          data.checkup_1 = JSON.parse(res.result.checkup1),
-          data.checkup_2 = JSON.parse(res.result.checkup2),
-          data.checkup_3 = JSON.parse(res.result.checkup3),
-          data.count_1 = res.result.count1,
-          data.count_2 = res.result.count2,
-          data.count_3 = res.result.count3,
-          data.count_4 = res.result.count4,
+          data.tags = res.result.tag,
+          data.checkup_4 = res.result.checkup_4,
+          data.checkup_1 = res.result.checkup_1,
+          data.checkup_2 = res.result.checkup_2,
+          data.checkup_3 = res.result.checkup_3,
+          data.count_1 = res.result.checkup_1.length,
+          data.count_2 = res.result.checkup_2.length,
+          data.count_3 = res.result.checkup_3.length,
+          data.count_4 = res.result.checkup_4.length,
           data.checkupCount = data.count_1 + data.count_2 + data.count_3 + data.count_4
     } else {
       ElMessage.error({
-        message: '未查询到商品信息'
+        message: '获取商品出错,请稍后重试'
       })
-
     }
   }, err => {
 
   })
 })
-const closeHandle = () => {
-  payment.visible = false
-}
+
 
 </script>
-<style lang="less" scoped>
-@import "goods.less";
+
+<style scoped lang="less">
+@import "goods_snapshot.less";
 </style>
